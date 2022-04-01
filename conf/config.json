@@ -1,0 +1,23 @@
+{
+	"param":{
+		"project_name":"Side-Project-Images",
+		"cron_spec":"@every 30s",
+		"image_out_path":"./dl_img/"
+	},
+	"os":{
+		"is_windows": false,
+		"time_file_path":"D:/task-scheduler/cctv-image-receiver/zoneinfo.zip"
+	},
+	"cctv":[
+		{
+			"user": "testUser",
+			"pwd": "testPwd",
+			"no": "1",	
+			"name": "測試畫面(1)",
+			"ip": "xxx.xxx.xxx.xxx:8000",
+			"image_url_suffix": "/GetSnapshot/1",
+			"image_width": 640,
+			"image_height": 480
+		}		
+	]
+}
