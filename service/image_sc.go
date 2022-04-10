@@ -49,7 +49,36 @@ func getImage(cctv conf.Cctv, imageOutPath string, cctvCountMap map[string]int) 
 	switch resp.StatusCode {
 	case http.StatusOK:
 		writeFile(cctv, imageOutPath, cctvCountMap, resp)
+	case http.StatusUnauthorized:
+		digestParts := util.GetDigestParts(resp)
+		digestParts["uri"] = cctv.ImageUrlSuffix
+		digestParts["method"] = req.Method
+		digestParts["username"] = cctv.User
+		digestParts["password"] = cctv.Pwd
+		getDigestAuthImage(digestParts, cctvCountMap, cctv, url, imageOutPath)
 	}
+}
+
+func getDigestAuthImage(digestParts map[string]string, cctvCountMap map[string]int,
+	cctv conf.Cctv, url, imageOutPath string) {
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req.Header.Set("Authorization", util.GetDigestAuthrization(digestParts))
+
+	if err != nil {
+		fmt.Printf("requsetError: %s\n", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		fmt.Printf("responseError: %s\n", err)
+		return
+	}
+
+	defer resp.Body.Close()
+
+	writeFile(cctv, imageOutPath, cctvCountMap, resp)
 }
 
 func writeFile(cctv conf.Cctv, imageOutPath string, cctvCountMap map[string]int, resp *http.Response) {
